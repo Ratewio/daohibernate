@@ -1,62 +1,46 @@
-# DAO Layer with Hibernate
+# DAO Hibernate — Spring Data JPA
 
-Приложение для получения пользователей из PostgreSQL по названию города с использованием Spring Boot, Hibernate и JPA.
+Приложение для работы с PostgreSQL через Spring Boot, Hibernate и Spring Data JPA.
 
 ## Технологии
 
 - Java 25
 - Spring Boot 4.1.2
-- Hibernate 7.4.13
 - Spring Data JPA
-- PostgreSQL 18.6
+- Hibernate 7
+- PostgreSQL 18
+- Flyway
 - Maven
-
-## База данных
-
-Создайте базу данных `dao` в PostgreSQL.
-
-Таблица `persons` создаётся автоматически при запуске приложения благодаря настройке Hibernate `ddl-auto=update`.
-
-Структура таблицы:
-
-| Поле | Тип |
-|---|---|
-| name | VARCHAR |
-| surname | VARCHAR |
-| age | INTEGER |
-| phone_number | VARCHAR |
-| city_of_living | VARCHAR |
-
-Первичный ключ: `name`, `surname`, `age`.
 
 ## Запуск
 
-1. Настройте подключение к PostgreSQL в `application.properties`.
-2. Запустите приложение:
+Запустить PostgreSQL в Docker:
 
 ```bash
-./mvnw spring-boot:run
+docker compose up -d
 ```
 
-Приложение запустится на порту `8080`.
-
-## API
-
-**GET** `/persons/by-city`
-
-Параметр запроса: `city` — название города.
-
-Пример:
+Запустить приложение:
 
 ```bash
-curl "http://localhost:8080/persons/by-city?city=Moscow"
+bash ./mvnw spring-boot:run
 ```
 
-В ответ возвращается JSON-массив пользователей, проживающих в указанном городе.
+Flyway автоматически создаёт таблицу `persons` и добавляет тестовые данные.
 
-## Реализация
+Приложение доступно по адресу `http://localhost:8080`.
 
-- `Person` — JPA Entity.
-- `PersonId` — составной первичный ключ.
-- `PersonRepository` — DAO-слой с использованием `EntityManager`.
-- `PersonController` — REST-контроллер.
+## REST API
+
+| Метод | Endpoint | Описание |
+|---|---|---|
+| GET | `/persons/by-city?city=Moscow` | Поиск по городу |
+| GET | `/persons/under-age?age=30` | Поиск по возрасту |
+| GET | `/persons/by-name-and-surname?name=Ivan&surname=Ivanov` | Поиск по имени и фамилии |
+
+## Структура проекта
+
+- `entity` — сущности `Person` и `PersonId`
+- `repository` — Spring Data JPA репозиторий
+- `controller` — REST-контроллер
+- `db/migration` — SQL-миграции Flyway
